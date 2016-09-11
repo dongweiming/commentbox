@@ -1,0 +1,6 @@
+mongoengine==0.10.6
+requests==2.11.1
+-e git+https://github.com/dongweiming/fake-useragent.git@master#egg=fake-useragent
+lxml==3.6.4
+futures==3.0.5
+pycrypto==2.6.1
