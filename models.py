@@ -1,22 +1,17 @@
 from datetime import datetime
 
-from mongoengine import (Document, StringField, DateTimeField, ReferenceField,
-                         IntField, ListField, DoesNotExist, connect)
-from config import DB_HOST, DB_PORT, DATABASE_NAME
+from mongoengine.queryset import DoesNotExist
+from ext import db
 
 ARTIST_URL = 'http://music.163.com/#/artist?id={}'
 SONG_URL = 'http://music.163.com/#/song?id={}'
 USER_URL = 'http://music.163.com/#/user/home?id={}'
 
 
-def lazy_connect():
-    connect(DATABASE_NAME, host=DB_HOST, port=DB_PORT)
-
-
-class BaseModel(Document):
-    id = IntField(primary_key=True)
-    create_at = DateTimeField(default=datetime.now)
-    update_at = DateTimeField()
+class BaseModel(db.Document):
+    id = db.IntField(primary_key=True)
+    create_at = db.DateTimeField(default=datetime.now)
+    update_at = db.DateTimeField()
 
     meta = {'allow_inheritance': True,
             'abstract': True
@@ -34,9 +29,9 @@ class BaseModel(Document):
 
 
 class Artist(BaseModel):
-    name = StringField()
-    picture = StringField()
-    songs = ListField(ReferenceField('Song'))
+    name = db.StringField()
+    picture = db.StringField()
+    songs = db.ListField(db.ReferenceField('Song'))
 
     @property
     def url(self):
@@ -44,10 +39,10 @@ class Artist(BaseModel):
 
 
 class Song(BaseModel):
-    name = StringField()
-    comment_count = IntField()
-    comments = ListField(ReferenceField('Comment'))
-    artist = ReferenceField('Artist')
+    name = db.StringField()
+    comment_count = db.IntField()
+    comments = db.ListField(db.ReferenceField('Comment'))
+    artist = db.ReferenceField('Artist')
 
     @property
     def url(self):
@@ -59,10 +54,10 @@ class Song(BaseModel):
 
 
 class Comment(BaseModel):
-    content = StringField()
-    like_count = IntField()
-    user = ReferenceField('User')
-    song = ReferenceField('Song')
+    content = db.StringField()
+    like_count = db.IntField()
+    user = db.ReferenceField('User')
+    song = db.ReferenceField('Song')
 
     @property
     def user_url(self):
@@ -78,8 +73,8 @@ class Comment(BaseModel):
 
 
 class User(BaseModel):
-    name = StringField()
-    picture = StringField()
+    name = db.StringField()
+    picture = db.StringField()
 
     @property
     def url(self):
@@ -88,7 +83,7 @@ class User(BaseModel):
 
 class Process(BaseModel):
     STATUS = PENDING, SUCCEEDED, FAILED = range(3)
-    status = IntField(choices=STATUS, default=PENDING)
+    status = db.IntField(choices=STATUS, default=PENDING)
 
     @property
     def is_success(self):

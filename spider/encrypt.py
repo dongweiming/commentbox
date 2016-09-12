@@ -5,9 +5,13 @@ import platform
 import json
 
 if platform.system() == 'Darwin':
-    import crypto
-    import sys
-    sys.modules['Crypto'] = crypto
+    try:
+        import crypto
+        import sys
+        sys.modules['Crypto'] = crypto
+    except ImportError:
+        pass
+
 
 from Crypto.Cipher import AES
 

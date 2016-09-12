@@ -2,7 +2,8 @@ import time
 
 from mongoengine.connection import disconnect
 
-from models import Artist, Song, Comment, User, Process, lazy_connect
+from models import Artist, Song, Comment, User, Process
+from app import create_app
 
 from spider.utils import get_user_agent, get_tree, post
 
@@ -26,8 +27,7 @@ def unprocess_artist_list():
 
 
 def parser_artist(artist_id):
-    disconnect()
-    lazy_connect()
+    create_app()
     process = Process.get_or_create(id=artist_id)
     if process.is_success:
         return
