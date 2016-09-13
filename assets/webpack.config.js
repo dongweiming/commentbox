@@ -16,7 +16,7 @@ var plugins = [
 module.exports = {
     devtool: "source-map",
     entry: {
-		    index: "./src/index"
+		    index: ['./src/index'],
 	  },
     output: {
         path: path.join(output, publicPath),
@@ -24,7 +24,7 @@ module.exports = {
         publicPath: publicPath
     },
     resolve: {
-        extensions: ['', '.js', '.es6']
+        extensions: ['', '.js', '.es6', '.jsx']
     },
     module: {
         preLoaders: [
@@ -36,7 +36,7 @@ module.exports = {
         ],
         loaders: [
             {
-                test: /(\.es6|\.js)$/,
+                test: /(\.es6|\.js|\.jsx)$/,
                 exclude: /node_modules/,
                 loader: 'babel'
             }

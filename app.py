@@ -2,6 +2,7 @@
 from flask import Flask
 
 import config
+import views
 from ext import db, mako
 
 
@@ -11,6 +12,7 @@ def create_app():
     app.config.from_object(config)
     mako.init_app(app)
     db.init_app(app)
+    app.register_blueprint(views.bp)
     return app
 
 

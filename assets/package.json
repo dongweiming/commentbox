@@ -4,7 +4,7 @@
   "description": "Musicbox",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -20,12 +20,14 @@
   },
   "homepage": "https://github.com/dongweiming/musicbox#readme",
   "dependencies": {
+    "babel-preset-stage-2": "^6.13.0",
     "material-design-icons": "^3.0.1",
     "material-ui": "^0.15.4",
     "mobx": "^2.5.1",
     "mobx-react": "^3.5.5",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
+    "react-hot-loader": "^3.0.0-beta.3",
     "react-router": "^2.8.0",
     "react-tap-event-plugin": "^1.0.0"
   },
@@ -41,11 +43,9 @@
     "eslint": "^3.5.0",
     "eslint-loader": "^1.5.0",
     "eslint-plugin-react": "^6.2.0",
-    "express": "^4.14.0",
     "http-proxy-middleware": "^0.17.1",
     "mobx-react-devtools": "^4.2.6",
-    "react-hot-loader": "^3.0.0-beta.3",
-    "serve-index": "^1.8.0",
+    "source-map-loader": "^0.1.5",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.7.0",
     "webpack-dev-server": "^1.15.1",
