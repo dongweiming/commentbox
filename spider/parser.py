@@ -19,6 +19,12 @@ def parser_artist_list(cat_id, initial_id):
     return [item.split('=')[1] for item in artist_items]
 
 
+def unprocess_artist_list():
+    lazy_connect()
+    unprocess = Process.objects.filter(status=Process.PENDING)
+    return [p.id for p in unprocess]
+
+
 def parser_artist(artist_id):
     disconnect()
     lazy_connect()
@@ -46,7 +52,8 @@ def parser_artist(artist_id):
     for item in song_items:
         song_id = item.split('=')[1]
         song = parser_song(song_id, artist)
-        songs.append(song)
+        if song is not None:
+            songs.append(song)
     artist.songs = songs
     artist.save()
     process.make_succeed()
@@ -88,6 +95,8 @@ def parser_song(song_id, artist):
         content = comment_['content']
         like_count = comment_['likedCount']
         user = comment_['user']
+        if not user:
+            continue
         user = User.get_or_create(id=user['userId'], name=user['nickname'],
                                   picture=user['avatarUrl'])
         comment = Comment.get_or_create(id=comment_id, content=content,
