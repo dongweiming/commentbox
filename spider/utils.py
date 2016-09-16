@@ -31,7 +31,7 @@ def fetch(url, retry=0):
                       'referer': 'http://music.163.com/'})
     try:
         return s.get(url, timeout=TIMEOUT, proxies=proxies)
-    except requests.exceptions.ConnectionError:
+    except requests.exceptions.RequestException:
         if retry < 3:
             return fetch(url, retry=retry + 1)
         raise
