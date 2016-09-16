@@ -63,12 +63,20 @@ def parser_song(song_id, artist):
         return
     data = r.json()
     if not song:
+        for404 = tree.xpath('//div[@class="n-for404"]')
+        if for404:
+            return
+
         try:
             song_name = tree.xpath('//em[@class="f-ff2"]/text()')[0].strip()
         except IndexError:
-            print 'Fetch limit!'
-            time.sleep(10)
-            return parser_song(song_id, artist)
+            try:
+                song_name = tree.xpath(
+                    '//meta[@name="keywords"]/@content')[0].strip()
+            except IndexError:
+                print 'Fetch limit!'
+                time.sleep(10)
+                return parser_song(song_id, artist)
         song = Song(id=song_id, name=song_name, artist=artist,
                     comment_count=data['total'])
         song.save()

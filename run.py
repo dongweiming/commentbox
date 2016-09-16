@@ -1,6 +1,5 @@
 import itertools
 
-from mongoengine import connect
 from concurrent.futures import ProcessPoolExecutor
 
 from spider.parser import parser_artist_list, parser_artist
