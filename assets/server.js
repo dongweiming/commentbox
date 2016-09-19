@@ -6,6 +6,7 @@ var httpProxyMiddleware = require("http-proxy-middleware");
 var config = require('./webpack.config.js');
 
 config.debug = true;
+//config.devtool = '#eval-source-map';
 config.devtool = 'eval';
 Object.keys(config.entry).forEach(key => {
     var item = config.entry[key];
