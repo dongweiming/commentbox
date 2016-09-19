@@ -1,8 +1,11 @@
 # coding=utf-8
+from collections import OrderedDict
+
 from flask import Flask
+from werkzeug.wsgi import DispatcherMiddleware
 
 import config
-import views
+from views import backend, json_api
 from ext import db, mako
 
 
@@ -12,7 +15,12 @@ def create_app():
     app.config.from_object(config)
     mako.init_app(app)
     db.init_app(app)
-    app.register_blueprint(views.bp)
+    app.register_blueprint(backend.bp)
+
+    app.wsgi_app = DispatcherMiddleware(app.wsgi_app, OrderedDict((
+        ('/j', json_api),
+    )))
+
     return app
 
 

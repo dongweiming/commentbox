@@ -8,6 +8,7 @@ import fetchComments from '../actions/comment';
 const CommentContainer = inject('commentStore')(observer(({commentStore}) => {
     return (
             <CommentList
+                title={'Test'}
                 comments={commentStore.comments}
                 fetchComments={fetchComments}
             />

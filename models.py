@@ -71,6 +71,11 @@ class Comment(BaseModel):
     def user_url(self):
         return self.song.artist_url
 
+    @classmethod
+    def get_random(cls, size=10):
+        proxy = cls.objects.aggregate({'$sample': {'size': size}}).all()
+        return proxy
+
 
 class User(BaseModel):
     name = db.StringField()

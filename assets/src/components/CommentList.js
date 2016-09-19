@@ -30,9 +30,9 @@ class Comment extends Component {
 class CommentList extends Component {
 
   render() {
-    const { comments } = this.props;
+    const {comments, title} = this.props;
     <List>
-      <Subheader>${this.props.title}</Subheader>
+      <Subheader>${title}</Subheader>
     {
       comments.map((comment) => {
         <Comment user={comment.user} song={comment.song} content={comment.content}>
