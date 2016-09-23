@@ -14,7 +14,8 @@ class BaseModel(db.Document):
     update_at = db.DateTimeField()
 
     meta = {'allow_inheritance': True,
-            'abstract': True
+            'abstract': True,
+            'strict': False
     }
 
     @classmethod
@@ -26,6 +27,14 @@ class BaseModel(db.Document):
             model = cls(**kwargs)
             model.save()
             return model
+
+    @classmethod
+    def aggregate_to_cls(cls, size):
+        ids = list(cls.objects.aggregate(
+            {'$sample': {'size': size}},
+            {'$group': {'_id': 0, 'ids': {'$push': '$_id'}}}
+        ))[0]['ids']
+        return Comment.objects(id__in=ids)
 
 
 class Artist(BaseModel):
@@ -64,17 +73,33 @@ class Comment(BaseModel):
         return self.user.url
 
     @property
-    def song_url(self):
-        return self.song.url
-
-    @property
     def user_url(self):
         return self.song.artist_url
 
     @classmethod
     def get_random(cls, size=10):
-        proxy = cls.objects.aggregate({'$sample': {'size': size}}).all()
-        return proxy
+        comments = cls.aggregate_to_cls(size)
+        return comments
+
+    def to_dict(self):
+        song_obj = self.song
+        user_obj = self.user
+        song = {
+            'url': song_obj.url,
+            'name': song_obj.name,
+            'pictureUrl': song_obj.artist.picture
+        }
+
+        user = {
+            'pictureUrl': user_obj.picture,
+            'name': user_obj.name
+        }
+        return {
+            'song': song,
+            'user': user,
+            'content': self.content
+        }
+
 
 
 class User(BaseModel):

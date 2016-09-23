@@ -158,7 +158,7 @@ class HomePage extends Component {
         Material-UI came about from our love of&nbsp;
         <a href="http://facebook.github.io/react/">React</a> and&nbsp;
         <a href="https://www.google.com/design/spec/material-design/introduction.html">
-         Google's Material Design
+         Google's Material
         </a>. We're currently using it on a project at&nbsp;
         <a href="https://www.call-em-all.com/Careers">Call-Em-All</a> and plan on adding to it
         and making it better in the coming months.

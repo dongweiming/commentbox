@@ -1,21 +1,25 @@
-import { observer, inject } from 'mobx-react';
+import React from 'react';
+import {observer} from 'mobx-react';
 import withWidth, {LARGE} from 'material-ui/utils/withWidth';
 
 import CommentList from './CommentList';
 import commentStore from '../stores/commentStore';
-import fetchComments from '../actions/comment';
 
-const CommentContainer = inject('commentStore')(observer(({commentStore}) => {
+@observer
+class Star extends React.Component {
+  render() {
     return (
-            <CommentList
-                title={'Test'}
-                comments={commentStore.comments}
-                fetchComments={fetchComments}
-            />
+      <CommentList
+        title={'Test'}
+        commentStore={commentStore}
+        sort={'star'}
+        perPage={20}
+      />
     );
-}));
+  }
+}
 
 
-export default withWidth()(CommentContainer);
+export default withWidth()(Star);
 
 

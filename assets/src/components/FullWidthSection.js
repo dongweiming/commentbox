@@ -1,9 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import ClearFix from 'material-ui/internal/ClearFix';
-import spacing from 'material-ui/styles/spacing';
 import withWidth, {SMALL, LARGE} from 'material-ui/utils/withWidth';
 
-const desktopGutter = spacing.desktopGutter;
+const desktopGutter = 10;
 
 class FullWidthSection extends Component {
 
@@ -13,19 +12,18 @@ class FullWidthSection extends Component {
     contentType: PropTypes.string,
     style: PropTypes.object,
     useContent: PropTypes.bool,
-    width: PropTypes.number.isRequired,
+    width: PropTypes.number.isRequired
   };
 
   static defaultProps = {
     useContent: false,
     contentType: 'div',
-    desktopGutter: desktopGutter
   };
 
   getStyles() {
     return {
       root: {
-        padding: this.props.desktopGutter,
+        padding: desktopGutter,
         boxSizing: 'border-box',
       },
       content: {
@@ -33,12 +31,12 @@ class FullWidthSection extends Component {
         margin: '0 auto',
       },
       rootWhenSmall: {
-        paddingTop: this.props.desktopGutter * 2,
-        paddingBottom: this.props.desktopGutter * 2,
+        paddingTop: desktopGutter * 2,
+        paddingBottom: desktopGutter * 2,
       },
       rootWhenLarge: {
-        paddingTop: this.props.desktopGutter * 3,
-        paddingBottom: this.props.desktopGutter * 3,
+        paddingTop: desktopGutter * 3,
+        paddingBottom: desktopGutter * 3,
       },
     };
   }

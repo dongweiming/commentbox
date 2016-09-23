@@ -21,7 +21,7 @@ def parser_artist_list(cat_id, initial_id):
 
 
 def unprocess_artist_list():
-    lazy_connect()
+    create_app()
     unprocess = Process.objects.filter(status=Process.PENDING)
     return [p.id for p in unprocess]
 

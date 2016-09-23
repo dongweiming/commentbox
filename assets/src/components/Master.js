@@ -193,7 +193,7 @@ class Master extends Component {
           onChangeList={this.handleChangeList}
           open={navDrawerOpen}
         />
-        <FullWidthSection style={styles.footer} desktopGutter={10}>
+        <FullWidthSection style={styles.footer}>
           <IconButton
             iconStyle={styles.iconButton}
             iconClassName="muidocs-icon-custom-github"

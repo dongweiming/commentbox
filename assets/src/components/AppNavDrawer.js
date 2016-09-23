@@ -91,8 +91,8 @@ class AppNavDrawer extends Component {
         >
           <ListItem primaryText="展示歌手图片" rightToggle={<Toggle toggled={this.state.showPic}
                     onToggle={this.togglePic}/>} />
-          <ListItem primaryText="按评论数排序" value="/star" />
-          <ListItem primaryText="随机获取" value="/random" />
+          <ListItem primaryText="按评论数排序" value="/#/star" />
+          <ListItem primaryText="随机获取" value="/#/random" />
         </SelectableList>
       </Drawer>
     );

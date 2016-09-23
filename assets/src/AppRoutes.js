@@ -3,6 +3,7 @@ import {Route, Redirect, IndexRoute} from 'react-router';
 
 import Master from './components/Master';
 import Home from './components/Home';
+import Star from './components/Star';
 
 const AppRoutes = (
         <Route path="/" component={Master}>

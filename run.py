@@ -10,7 +10,7 @@ CAT_IDS = [1001, 1002, 1003, 2001, 2002, 2003, 4001, 4002, 4003,
 INITIAL_IDS = [0, -1] + range(65, 91)
 
 
-with ProcessPoolExecutor(max_workers=16) as executor:
+with ProcessPoolExecutor(max_workers=2) as executor:
     for artist_id in unprocess_artist_list():
         executor.submit(parser_artist, artist_id)
 
