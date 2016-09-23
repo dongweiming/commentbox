@@ -10,6 +10,7 @@ import Subheader from 'material-ui/Subheader';
 import Avatar from 'material-ui/Avatar';
 import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 import MenuItem from 'material-ui/MenuItem';
+import withWidth, {LARGE} from 'material-ui/utils/withWidth';
 
 function getBodyHeight() {
   let height;
@@ -97,12 +98,13 @@ class CommentList extends Component {
 
   render() {
     const style = {
-       paddingTop: 200
-     };
+      textAlign: 'center',
+      height: 600
+    };
     const {commentStore, title} = this.props;
     const {comments} = commentStore;
     if (!comments.length) {
-      return <CircularProgress size={1.5}/>
+      return <div style={style}><CircularProgress size={1.5}/></div>
     }
     return (
       <div className="comment-list">
@@ -127,4 +129,4 @@ class CommentList extends Component {
   }
 }
 
-export default CommentList;
+export default withWidth()(CommentList);

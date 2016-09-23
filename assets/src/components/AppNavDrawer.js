@@ -39,7 +39,9 @@ class AppNavDrawer extends Component {
   };
 
   state = {
-    'showPic': true
+    'showPic': true,
+    'star': true,
+    'random': false
   }
 
   static contextTypes = {
@@ -60,6 +62,13 @@ class AppNavDrawer extends Component {
 
   togglePic = () => {
     this.setState({'showPic': !this.state.showPic});
+  }
+
+  toggleOrderBy = () => {
+    this.setState({
+      'star': !this.state.star,
+      'random': !this.state.random
+    });
   }
 
 
@@ -89,10 +98,10 @@ class AppNavDrawer extends Component {
           value=""
           onChange={this.handleRequestChangeLink}
         >
-          <ListItem primaryText="展示歌手图片" rightToggle={<Toggle toggled={this.state.showPic}
-                    onToggle={this.togglePic}/>} />
-          <ListItem primaryText="按评论数排序" value="/#/star" />
-          <ListItem primaryText="随机获取" value="/#/random" />
+          <ListItem primaryText="展示歌手图片" rightToggle={<Toggle toggled={this.state.showPic} onToggle={this.togglePic}/>} />
+          <Divider />
+          <ListItem primaryText="评论数排序" rightToggle={<Toggle toggled={this.state.star} onToggle={this.toggleOrderBy}/>} />
+          <ListItem primaryText="随机排序" rightToggle={<Toggle toggled={this.state.random} onToggle={this.toggleOrderBy}/>} />
         </SelectableList>
       </Drawer>
     );
