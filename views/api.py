@@ -1,8 +1,8 @@
 # coding=utf-8
-from flask import Flask, json, request
+from flask import Flask, json, request, current_app
 from werkzeug.wrappers import Response
 
-from models import Comment
+from models import Comment, SAMPLE_SIZE
 from views.utils import ApiResult
 from views.exceptions import ApiException
 
@@ -46,8 +46,14 @@ def home():
     start = request.args.get('start', 0, type=int)
     limit = request.args.get('limit', PER_PAGE, type=int)
 
-    comments = Comment.get_random(limit)
+    if sort == 'star':
+        comments = Comment.order_by_star(start, limit)
+    elif sort == 'random':
+        session_id = request.cookies.get(current_app.session_cookie_name)
+        comments = Comment.get_random_by_session_id(session_id, start, limit)
+    else:
+        comments= []
     return {
         'comments': [comment.to_dict() for comment in comments],
-        'has_more': True
+        'has_more': start + limit < SAMPLE_SIZE
     }

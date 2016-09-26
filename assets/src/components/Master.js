@@ -8,6 +8,7 @@ import {darkWhite, lightWhite, grey900} from 'material-ui/styles/colors';
 import AppNavDrawer from './AppNavDrawer';
 import FullWidthSection from './FullWidthSection';
 import withWidth, {MEDIUM, LARGE} from 'material-ui/utils/withWidth';
+import commentStore from '../stores/commentStore';
 
 class Master extends Component {
   static propTypes = {
@@ -192,6 +193,7 @@ class Master extends Component {
           onRequestChangeNavDrawer={this.handleChangeRequestNavDrawer}
           onChangeList={this.handleChangeList}
           open={navDrawerOpen}
+          commentStore={commentStore}
         />
         <FullWidthSection style={styles.footer}>
           <IconButton

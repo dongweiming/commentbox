@@ -2,10 +2,17 @@ from datetime import datetime
 
 from mongoengine.queryset import DoesNotExist
 from ext import db
+from libs.rdstore import cache
 
 ARTIST_URL = 'http://music.163.com/#/artist?id={}'
 SONG_URL = 'http://music.163.com/#/song?id={}'
 USER_URL = 'http://music.163.com/#/user/home?id={}'
+SAMPLE_SIZE = 200
+TOTAL_SIZE = 2000
+
+random_key = 'commentbox:random:{session_id}'
+star_key = 'commentbox:star'
+TIMEOUT = 60 * 60
 
 
 class BaseModel(db.Document):
@@ -29,12 +36,14 @@ class BaseModel(db.Document):
             return model
 
     @classmethod
-    def aggregate_to_cls(cls, size):
-        ids = list(cls.objects.aggregate(
-            {'$sample': {'size': size}},
-            {'$group': {'_id': 0, 'ids': {'$push': '$_id'}}}
-        ))[0]['ids']
-        return Comment.objects(id__in=ids)
+    def get_sample_ids(cls, size):
+        samples = list(cls.objects.aggregate(
+            {'$sample': {'size': size}}))
+        return [s['_id'] for s in samples]
+
+    @classmethod
+    def ids_to_cls(cls, ids):
+        return cls.objects(id__in=ids)
 
 
 class Artist(BaseModel):
@@ -67,6 +76,11 @@ class Comment(BaseModel):
     like_count = db.IntField()
     user = db.ReferenceField('User')
     song = db.ReferenceField('Song')
+    meta = {
+        'indexes': [
+            '-like_count'
+        ]
+    }
 
     @property
     def user_url(self):
@@ -77,26 +91,61 @@ class Comment(BaseModel):
         return self.song.artist_url
 
     @classmethod
-    def get_random(cls, size=10):
-        comments = cls.aggregate_to_cls(size)
+    def cache_by_key(cls, key, ids):
+        cache.delete(key)
+        cache.rpush(key, *ids)
+        cache.expire(key, TIMEOUT)
+
+    @classmethod
+    def get_random_by_session_id(cls, session_id, start=0, limit=20):
+        key = random_key.format(session_id=session_id)
+        if not start % SAMPLE_SIZE:
+            ids = cls.get_sample_ids(SAMPLE_SIZE)
+            cls.cache_by_key(key, ids)
+
+        else:
+            ids = cache.lrange(key, start, start + limit)
+            if not ids:
+                ids = cls.get_sample_ids(SAMPLE_SIZE)
+                cls.cache_by_key(key, ids)
+
+        comments = cls.ids_to_cls(ids)
         return comments
+
+    @classmethod
+    def order_by_star(cls, start=0, limit=20):
+        ids = cache.lrange(star_key, start, start + limit)
+        if not ids:
+            ids = [c.id for c in cls.objects.order_by('-like_count')[:TOTAL_SIZE]]  # noqa
+            cache.rpush(star_key, *ids)
+            ids = ids[start : start + limit]
+
+        return cls.ids_to_cls(ids)
 
     def to_dict(self):
         song_obj = self.song
         user_obj = self.user
+        artist_obj = song_obj.artist
         song = {
             'url': song_obj.url,
-            'name': song_obj.name,
-            'pictureUrl': song_obj.artist.picture
+            'name': song_obj.name
+        }
+
+        artist = {
+            'avatar': artist_obj.picture,
+            'name': artist_obj.name,
+            'url': artist_obj.url
         }
 
         user = {
-            'pictureUrl': user_obj.picture,
-            'name': user_obj.name
+            'avatar': user_obj.picture,
+            'name': user_obj.name,
+            'url': user_obj.url
         }
         return {
             'song': song,
             'user': user,
+            'artist': artist,
             'content': self.content
         }
 

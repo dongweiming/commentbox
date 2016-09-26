@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 import {observer} from 'mobx-react';
 import DevTools from 'mobx-react-devtools';
 import {List, ListItem} from 'material-ui/List';
+import {Card, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 import CircularProgress from 'material-ui/CircularProgress';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh';
 import spacing from 'material-ui/styles/spacing';
 import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
@@ -14,13 +17,13 @@ import withWidth, {LARGE} from 'material-ui/utils/withWidth';
 
 function getBodyHeight() {
   let height;
-  if( typeof( window.innerWidth ) == 'number' ) {
-    height = window.innerHeight;
+  if ( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+    height = document.body.clientHeight;
   } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
     //IE 6+ in 'standards compliant mode'
     height = document.documentElement.clientHeight;
-  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
-    height = document.body.clientHeight;
+  } else if( typeof( window.innerWidth ) == 'number' ) {
+    height = window.innerHeight;
   }
   return height
 }
@@ -28,15 +31,16 @@ function getBodyHeight() {
 class Comment extends Component {
 
   render() {
+    const {user, song, content} = this.props.comment;
     return (
       <div>
         <ListItem
-          leftAvatar={<Avatar src={this.props.user.pictureUrl} />}
-          primaryText={<a href={this.props.song.url}>{this.props.song.name}</a>}
+          leftAvatar={<Avatar src={user.avatar} />}
+          primaryText={<a href={song.url}>{song.name}</a>}
           secondaryText={
             <p>
-              <span style={{color: darkBlack}}>{this.props.user.name}</span> --
-                          {this.props.content}
+              <span style={{color: darkBlack}}>{user.name}</span> --
+                          {content}
             </p>
                         }
           secondaryTextLines={2}
@@ -47,34 +51,80 @@ class Comment extends Component {
   }
 }
 
+class CommentCard extends Component {
+
+  render() {
+    const {user, song, content, artist} = this.props.comment;
+    return (
+      <div>
+        <Card>
+          <CardHeader
+            title={<a href={user.url}>{user.name}</a>}
+            avatar={user.avatar}
+           />
+           <CardMedia
+             overlay={<CardTitle title={<a href={artist.url}>{artist.name}</a>}/>}
+           >
+             <img src={artist.avatar} />
+           </CardMedia>
+           <CardText>
+             {content}
+           </CardText>
+         </Card>
+         <Divider inset={true} />
+       </div>
+     )
+   }
+}
+
 @observer
 class CommentList extends Component {
 
   static defaultProps = {
-    threshold: 250,
+    pcThreshold: 450,
+    mobileThreshold: 650,
+    threshold: 450,
     perPage: 20,
-    pageStart: 0
+    mediumWidth: 768
   }
 
   componentDidMount () {
-    this.pageLoaded = this.props.pageStart;
     this.pending = false;
+    this.props.commentStore.loadComments(this.props.commentStore.orderBy, 0, this.props.perPage)
     this.attachScrollListener();
+  }
+
+  componentWillMount () {
+    let showPic, threshold, height;
+    if (screen.width > this.props.mediumWidth) {
+      showPic = false;
+      threshold = this.props.pcThreshold;
+      height = window.innerHeight;
+    } else {
+      showPic = true;
+      threshold = this.props.mobileThreshold;
+      height = screen.height;
+    }
+    this.threshold = threshold;
+    this.props.commentStore.showPic = showPic;
+    this.height = height;
   }
 
   scrollListener = () => {
 
     var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
-
-    if (getBodyHeight() - scrollTop - window.innerHeight < Number(650)) {
+    let threshold = this.threshold;
+    if (screen.width < this.props.mediumWidth) {
+      threshold = threshold * (this.props.commentStore.pageLoaded / this.props.perPage + 1 );
+    }
+    if (getBodyHeight() - scrollTop - this.height < Number(threshold)) {
        if (this.pending) {
          return
        }
       this.pending = true;
-      this.props.commentStore.loadComments(this.props.sort, this.pageLoaded, this.props.perPage, () =>(
+      this.props.commentStore.loadComments(this.props.commentStore.orderBy, this.props.commentStore.pageLoaded += this.props.perPage, this.props.perPage, () =>(
         this.pending = false
       ));
-      this.pageLoaded += this.props.perPage;
     }
   }
 
@@ -101,31 +151,44 @@ class CommentList extends Component {
       textAlign: 'center',
       height: 600
     };
-    const {commentStore, title} = this.props;
-    const {comments} = commentStore;
+    const buttonStyle = {
+      margin: 30,
+      float: 'right',
+      cursor: 'pointer'
+    };
+
+    const {comments, star, orderBy, showPic} = this.props.commentStore;
     if (!comments.length) {
       return <div style={style}><CircularProgress size={1.5}/></div>
     }
     return (
-      <div className="comment-list">
-        <List>
-          <Subheader>{title}</Subheader>
-          {
+      <div>
+        {orderBy === 'random' ?
+          <FloatingActionButton onClick={this.onReset} style={buttonStyle}>
+            <NavigationRefresh/>
+          </FloatingActionButton> : ''
+        }
+        <div className="comment-list">
+          <List>
+            <Subheader>{star ? '按评论数' : '随机排序'}</Subheader>
+            {
               comments.map((comment, index) => {
-                return <Comment user={comment.user} song={comment.song} content={comment.content} key={index}/>
+                if (showPic) {
+                  return <CommentCard comment={comment} key={index}/>
+                } else {
+                  return <Comment comment={comment} key={index}/>
+                }
               })
-          }
-        </List>
-        <button onClick={this.onReset}>
-          Change
-        </button>
+            }
+          </List>
+        </div>
         <DevTools />
       </div>
     )
   }
 
   onReset = () => {
-    this.props.commentStore.loadComments();
+    this.props.commentStore.resetComments(this.props.commentStore.orderBy);
   }
 }
 

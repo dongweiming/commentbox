@@ -7,6 +7,8 @@ from werkzeug.wsgi import DispatcherMiddleware
 import config
 from views import backend, json_api
 from ext import db, mako
+from libs.rdstore import cache
+from libs.session import RedisSessionInterface
 
 
 def create_app():
@@ -15,6 +17,7 @@ def create_app():
     app.config.from_object(config)
     mako.init_app(app)
     db.init_app(app)
+    app.session_interface = RedisSessionInterface(cache)
     app.register_blueprint(backend.bp)
 
     app.wsgi_app = DispatcherMiddleware(app.wsgi_app, OrderedDict((

@@ -140,10 +140,8 @@ class HomePage extends Component {
       <div style={style}>
         {this.banner()}
         <CommentList
-           title={'Test'}
-           commentStore={commentStore}
-           sort={'star'}
-           perPage={20}
+          commentStore={commentStore}
+          perPage={20}
         />
       </div>
     );

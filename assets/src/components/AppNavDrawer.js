@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import {observer} from 'mobx-react';
 import Drawer from 'material-ui/Drawer';
 import {List, ListItem, MakeSelectable} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
@@ -28,6 +29,7 @@ const styles = {
   },
 };
 
+@observer
 class AppNavDrawer extends Component {
   static propTypes = {
     docked: PropTypes.bool.isRequired,
@@ -37,12 +39,6 @@ class AppNavDrawer extends Component {
     open: PropTypes.bool.isRequired,
     style: PropTypes.object,
   };
-
-  state = {
-    'showPic': true,
-    'star': true,
-    'random': false
-  }
 
   static contextTypes = {
     muiTheme: PropTypes.object.isRequired,
@@ -59,18 +55,6 @@ class AppNavDrawer extends Component {
       window.location = value;
     }
   };
-
-  togglePic = () => {
-    this.setState({'showPic': !this.state.showPic});
-  }
-
-  toggleOrderBy = () => {
-    this.setState({
-      'star': !this.state.star,
-      'random': !this.state.random
-    });
-  }
-
 
   render() {
     const {
@@ -98,10 +82,10 @@ class AppNavDrawer extends Component {
           value=""
           onChange={this.handleRequestChangeLink}
         >
-          <ListItem primaryText="展示歌手图片" rightToggle={<Toggle toggled={this.state.showPic} onToggle={this.togglePic}/>} />
+          <ListItem primaryText="展示歌手图片" rightToggle={<Toggle toggled={this.props.commentStore.showPic} onToggle={this.props.commentStore.togglePic}/>} />
           <Divider />
-          <ListItem primaryText="评论数排序" rightToggle={<Toggle toggled={this.state.star} onToggle={this.toggleOrderBy}/>} />
-          <ListItem primaryText="随机排序" rightToggle={<Toggle toggled={this.state.random} onToggle={this.toggleOrderBy}/>} />
+          <ListItem primaryText="评论数排序" rightToggle={<Toggle toggled={this.props.commentStore.star} onToggle={this.props.commentStore.toggleOrderBy}/>} />
+          <ListItem primaryText="随机排序" rightToggle={<Toggle toggled={this.props.commentStore.random} onToggle={this.props.commentStore.toggleOrderBy}/>} />
         </SelectableList>
       </Drawer>
     );
