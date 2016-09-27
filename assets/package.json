@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/dongweiming/musicbox#readme",
   "dependencies": {
+    "exports-loader": "^0.6.3",
+    "imports-loader": "^0.6.5",
     "material-ui": "^0.15.4",
     "mobx": "^2.5.1",
     "mobx-react": "^3.5.5",
