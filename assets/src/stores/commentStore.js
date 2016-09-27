@@ -9,6 +9,8 @@ class CommentStore {
     @observable random;
     @observable pageLoaded;
     @observable hints;
+    @observable pending;
+    @observable useSearch;
 
     constructor() {
         this.comments = [];
@@ -18,6 +20,8 @@ class CommentStore {
         this.star = true;
         this.pageLoaded = 0;
         this.hints = [];
+        this.pending = false;
+        this.useSearch = false;
     }
 
     @action setComments = (comments) => {
@@ -25,6 +29,7 @@ class CommentStore {
     }
 
     @action	loadComments(sort='star', start=0, limit=20, callback=null, reset=false) {
+        this.pending = true;
         fetch(`/j/comments?sort=${sort}&start=${start}&limit=${limit}`)
             .then((response) => response.json())
             .then((rs) => {
@@ -37,11 +42,13 @@ class CommentStore {
                 if (callback) {
                     callback();
                 }
+                this.pending = false;
             });
     }
 
     @action resetComments(sort='star', callback=null) {
         this.loadComments(sort, 0, 20, callback, true);
+        this.useSearch = false;
     }
 
     @computed get orderBy() {
@@ -59,9 +66,12 @@ class CommentStore {
         this.pageLoaded = 0;
     }
 
-    @action loadCommentsForSearch(text) {
+    @action loadCommentsForSearch(id, type='song') {
+        this.pending = true;
+        this.useSearch = true;
         var data = new FormData();
-        data.append('text', text);
+        data.append('type', type);
+        data.append('subject_id', id);
         fetch(`/j/search`, {
             method: 'POST',
             body: data
@@ -69,7 +79,7 @@ class CommentStore {
             .then((response) => response.json())
             .then((rs) => {
                 this.setComments(rs.comments);
-                this.hasMore = false;
+                this.pending = false;
             });
     }
 

@@ -61,8 +61,9 @@ def home():
 
 @json_api.route('/search', methods=['POST'])
 def search_view():
-    text = request.form.get('text', '')
-    comments = search(text)
+    subject_id = request.form.get('subject_id', '')
+    type = request.form.get('type', 'song')
+    comments = search(subject_id, type)
     return {
         'comments': [comment.to_dict() for comment in comments]
     }
@@ -71,5 +72,8 @@ def search_view():
 @json_api.route('/suggest', methods=['POST'])
 def suggest_view():
     text = request.form.get('text', '')
+    start = request.form.get('start', 0, type=int)
+    limit = request.form.get('limit', 20, type=int)
     items = suggest(text)
+    items = items[start: start + limit]
     return {'items': items}

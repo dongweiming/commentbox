@@ -162,7 +162,7 @@ class Master extends Component {
 
     return (
       <div>
-        <Title render="神评论" />
+        <Title render="云音乐评论" />
         <AppBar
           onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}
           title={title}
@@ -170,7 +170,7 @@ class Master extends Component {
           iconElementRight={
             <IconButton
               iconClassName="muidocs-icon-custom-github"
-              href="https://github.com/dongweiming/musicbox"
+              href="https://github.com/dongweiming/commentbox"
             />
           }
           style={styles.appBar}
@@ -199,7 +199,7 @@ class Master extends Component {
           <IconButton
             iconStyle={styles.iconButton}
             iconClassName="muidocs-icon-custom-github"
-            href="https://github.com/dongweiming/musicbox"
+            href="https://github.com/dongweiming/commentbox"
           />
           <p style={prepareStyles(styles.netease)}>
             {'Thank you to '}

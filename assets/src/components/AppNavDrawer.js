@@ -75,7 +75,7 @@ class AppNavDrawer extends Component {
         containerStyle={{zIndex: zIndex.drawer - 100}}
       >
         <div style={styles.logo} onTouchTap={this.handleTouchTapHeader}>
-          网易云音乐神奇评论
+          CommentBox
         </div>
 
         <SelectableList

@@ -116,7 +116,7 @@ class CommentList extends Component {
     if (screen.width < this.props.mediumWidth) {
       threshold = threshold * (this.props.commentStore.pageLoaded / this.props.perPage + 1 );
     }
-    if (getBodyHeight() - scrollTop - this.height < Number(threshold)) {
+    if (getBodyHeight() - scrollTop - this.height < Number(threshold) && !this.props.commentStore.useSearch) {
        if (this.pending) {
          return
        }
@@ -150,15 +150,22 @@ class CommentList extends Component {
       textAlign: 'center',
       height: 600
     };
-    const buttonStyle = {
+    let buttonStyle = {
       margin: 30,
       float: 'right',
       cursor: 'pointer'
     };
 
-    const {comments, star, orderBy, showPic} = this.props.commentStore;
-    if (!comments.length) {
+    const {comments, star, orderBy, showPic, pending} = this.props.commentStore;
+    if (pending) {
       return <div style={style}><CircularProgress size={1.5}/></div>
+    } else if (!comments.length) {
+      buttonStyle = Object.assign(buttonStyle, {'float': 'none'});
+      return <div style={style}><p>没有搜到评论哎😌  点下边刷新按钮看看</p>
+         <FloatingActionButton onClick={this.onReset} style={buttonStyle}>
+           <NavigationRefresh/>
+         </FloatingActionButton>
+      </div>
     }
     return (
       <div>

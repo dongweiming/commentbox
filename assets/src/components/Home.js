@@ -15,14 +15,14 @@ import CommentList from './CommentList';
 import commentStore from '../stores/commentStore';
 
 class SearchHint extends Component {
+  handleClick = (hint) => {
+    const {commentStore} = this.props;
+    commentStore.hints = [];
+    commentStore.loadCommentsForSearch(hint.id, hint.type);
+  }
 
-  render(){
+  render() {
     const styles = {
-      searchHint: {
-        background: 'rgba(0,0,0,.4)',
-        width: 558,
-        margin: '0 auto'
-      },
       searchHintLi: {
         color: '#fff'
       },
@@ -31,24 +31,10 @@ class SearchHint extends Component {
       }
     }
 
-    const {hints} = this.props;
-    if (!hints) {
-      return ''
-    }
-    return (
-      <List style={styles.searchHint}>
-        <ul>
-        {
-          hints.map((hint, index) => {
-            return <ListItem style={styles.searchHintLi} primaryText={`${hint.name} - ${hint.type}`}
-                     leftIcon={ hint.type === 'artist' ? <ActionGrade color={pinkA200} /> : ''}
-                     rightAvatar={<Avatar src={hint.avatar} />}
-                   />
-          })
-        }
-        </ul>
-      </List>
-    )
+    const {hint} = this.props;
+    return <ListItem style={styles.searchHintLi} primaryText={`${hint.name} - ${hint.type}`}
+             leftIcon={ hint.type === 'artist' ? <ActionGrade color={pinkA200} /> : null}
+             rightAvatar={<Avatar src={hint.avatar} />} onClick={this.handleClick.bind(this, hint)}/>
   }
 }
 
@@ -81,6 +67,11 @@ class Banner extends Component {
         backgroundSize: 'cover',
         transition: 'opacity 200ms ease-in-out'
       },
+      searchHint: {
+         background: 'rgba(0,0,0,.4)',
+         width: 558,
+         margin: '0 auto'
+       },
       mask: {
         position: 'absolute',
         height: 100,
@@ -127,7 +118,9 @@ class Banner extends Component {
       }
     };
 
+    const {hints} = this.props.commentStore;
     return (
+
       <div style={styles.root}>
         <div style={styles.headBox}>
           <div style={styles.bannerBackground}></div>
@@ -136,10 +129,18 @@ class Banner extends Component {
             <div style={styles.title}></div>
             <div style={styles.searchBox}>
               <form method="get" action="/search/" style={styles.searchForm}>
-                <input ref="query" onChange={this.onChange} style={styles.query} type="text" size="27" name="q" autocomplete="off" placeholder="请输入你喜欢的歌手或者歌曲名字"/>
-                  <a href="#" onclick="return false;" style={styles.go}></a>
+                <input ref="query" onChange={this.onChange} style={styles.query} type="text" size="27" name="q" placeholder="请输入你喜欢的歌手或者歌曲名字"/>
+                  <a href="#" style={styles.go}></a>
               </form>
-              <SearchHint hints={this.props.commentStore.hints}/>
+              { hints.length ?
+              <List style={styles.searchHint}>
+                {
+                  hints.map((hint, index) => {
+                    return <SearchHint hint={hint} key={index} commentStore={this.props.commentStore}/>
+                  })
+                }
+              </List>
+              : ''}
             </div>
           </div>
         </div>
