@@ -1,25 +1,66 @@
 import React, {Component, PropTypes} from 'react';
+import ReactDOM from 'react-dom';
+import {observer} from 'mobx-react';
 import RaisedButton from 'material-ui/RaisedButton';
+import Avatar from 'material-ui/Avatar';
+import ActionGrade from 'material-ui/svg-icons/action/grade';
+import {List, ListItem} from 'material-ui/List';
 import withWidth, {LARGE} from 'material-ui/utils/withWidth';
 import spacing from 'material-ui/styles/spacing';
 import typography from 'material-ui/styles/typography';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import {cyan500, grey200, darkWhite} from 'material-ui/styles/colors';
+import {cyan500, grey200, pinkA200, darkWhite} from 'material-ui/styles/colors';
 
 import CommentList from './CommentList';
 import commentStore from '../stores/commentStore';
 
-class HomePage extends Component {
+class SearchHint extends Component {
 
-  static propTypes = {
-    width: PropTypes.number.isRequired,
-  };
+  render(){
+    const styles = {
+      searchHint: {
+        background: 'rgba(0,0,0,.4)',
+        width: 558,
+        margin: '0 auto'
+      },
+      searchHintLi: {
+        color: '#fff'
+      },
+      hover: {
+        background: 'rgba(0,0,0,.7)'
+      }
+    }
 
-  static contextTypes = {
-    router: PropTypes.object.isRequired,
-  };
+    const {hints} = this.props;
+    if (!hints) {
+      return ''
+    }
+    return (
+      <List style={styles.searchHint}>
+        <ul>
+        {
+          hints.map((hint, index) => {
+            return <ListItem style={styles.searchHintLi} primaryText={`${hint.name} - ${hint.type}`}
+                     leftIcon={ hint.type === 'artist' ? <ActionGrade color={pinkA200} /> : ''}
+                     rightAvatar={<Avatar src={hint.avatar} />}
+                   />
+          })
+        }
+        </ul>
+      </List>
+    )
+  }
+}
 
-  banner() {
+@observer
+class Banner extends Component {
+
+  onChange = () => {
+    let text = ReactDOM.findDOMNode(this.refs.query).value;
+    this.props.commentStore.loadSuggest(text);
+  }
+
+  render() {
     const styles = {
       root: {
         backgroundColor: cyan500,
@@ -83,31 +124,6 @@ class HomePage extends Component {
         height: 36,
         background: 'url(/static/images/icon_search.svg) 9px 7px no-repeat',
         cursor: 'pointer'
-      },
-      searchHint: {
-        position: 'absolute',
-        boxSizing: 'border-box',
-        fontSize: 16,
-        background: '#fff',
-        boxShadow: '0 0 2px rgba(0,0,0,.2)',
-        zIndex: 999999999999,
-        minWidth: 558,
-        left: 363
-      },
-      searchHintLi: {
-        padding: '0 12px',
-        height: '26px',
-        textAlign: 'left',
-        cursor: 'pointer',
-        whiteSpace: 'nowrap',
-        height: '30px',
-        lineHeight: '30px',
-        fontSize: '14px',
-        color: '#fff'
-      },
-      hintActive: {
-        background: 'rgba(0,0,0,.6)',
-        marginTop: 0
       }
     };
 
@@ -120,17 +136,19 @@ class HomePage extends Component {
             <div style={styles.title}></div>
             <div style={styles.searchBox}>
               <form method="get" action="/search/" style={styles.searchForm}>
-                <input id="query" onFocus={this.onFocus} onBlur={this.onBlur} style={styles.query} type="text" size="27" name="q" autocomplete="off" placeholder="请输入你喜欢的歌手或者歌曲名字"/>
+                <input ref="query" onChange={this.onChange} style={styles.query} type="text" size="27" name="q" autocomplete="off" placeholder="请输入你喜欢的歌手或者歌曲名字"/>
                   <a href="#" onclick="return false;" style={styles.go}></a>
               </form>
-              <div style={styles.searchHint} ></div>
+              <SearchHint hints={this.props.commentStore.hints}/>
             </div>
           </div>
         </div>
       </div>
     );
   }
+}
 
+class HomePage extends Component {
   render() {
     const style = {
       paddingTop: spacing.desktopKeylineIncrement,
@@ -138,7 +156,9 @@ class HomePage extends Component {
 
     return (
       <div style={style}>
-        {this.banner()}
+        <Banner
+           commentStore={commentStore}
+         />
         <CommentList
           commentStore={commentStore}
           perPage={20}

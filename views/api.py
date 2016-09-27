@@ -2,7 +2,7 @@
 from flask import Flask, json, request, current_app
 from werkzeug.wrappers import Response
 
-from models import Comment, SAMPLE_SIZE
+from models import Comment, SAMPLE_SIZE, search, suggest
 from views.utils import ApiResult
 from views.exceptions import ApiException
 
@@ -57,3 +57,19 @@ def home():
         'comments': [comment.to_dict() for comment in comments],
         'has_more': start + limit < SAMPLE_SIZE
     }
+
+
+@json_api.route('/search', methods=['POST'])
+def search_view():
+    text = request.form.get('text', '')
+    comments = search(text)
+    return {
+        'comments': [comment.to_dict() for comment in comments]
+    }
+
+
+@json_api.route('/suggest', methods=['POST'])
+def suggest_view():
+    text = request.form.get('text', '')
+    items = suggest(text)
+    return {'items': items}

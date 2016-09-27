@@ -8,6 +8,7 @@ class CommentStore {
     @observable star;
     @observable random;
     @observable pageLoaded;
+    @observable hints;
 
     constructor() {
         this.comments = [];
@@ -16,6 +17,7 @@ class CommentStore {
         this.random = false;
         this.star = true;
         this.pageLoaded = 0;
+        this.hints = [];
     }
 
     @action setComments = (comments) => {
@@ -55,6 +57,33 @@ class CommentStore {
         this.random = !this.random;
         this.resetComments(this.orderBy);
         this.pageLoaded = 0;
+    }
+
+    @action loadCommentsForSearch(text) {
+        var data = new FormData();
+        data.append('text', text);
+        fetch(`/j/search`, {
+            method: 'POST',
+            body: data
+        })
+            .then((response) => response.json())
+            .then((rs) => {
+                this.setComments(rs.comments);
+                this.hasMore = false;
+            });
+    }
+
+    @action loadSuggest(text) {
+        var data = new FormData();
+        data.append('text', text);
+        fetch(`/j/suggest`, {
+            method: 'POST',
+            body: data
+        })
+            .then((response) => response.json())
+            .then((rs) => {
+                this.hints = rs.items;
+            });
     }
 }
 

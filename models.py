@@ -1,3 +1,4 @@
+# coding=utf-8
 from datetime import datetime
 
 from mongoengine.queryset import DoesNotExist
@@ -12,6 +13,7 @@ TOTAL_SIZE = 2000
 
 random_key = 'commentbox:random:{session_id}'
 star_key = 'commentbox:star'
+search_key = 'commentbox:search:{text}'
 TIMEOUT = 60 * 60
 
 
@@ -50,6 +52,10 @@ class Artist(BaseModel):
     name = db.StringField()
     picture = db.StringField()
     songs = db.ListField(db.ReferenceField('Song'))
+    meta = {
+        # 'indexes': ['name', '$name']  # 不支持text search?
+        'indexes': ['name']
+     }
 
     @property
     def url(self):
@@ -61,6 +67,9 @@ class Song(BaseModel):
     comment_count = db.IntField()
     comments = db.ListField(db.ReferenceField('Comment'))
     artist = db.ReferenceField('Artist')
+    meta = {
+        'indexes': ['name']
+    }
 
     @property
     def url(self):
@@ -150,7 +159,6 @@ class Comment(BaseModel):
         }
 
 
-
 class User(BaseModel):
     name = db.StringField()
     picture = db.StringField()
@@ -173,3 +181,27 @@ class Process(BaseModel):
 
     def make_fail(self):
         return self.update(status=self.FAILED)
+
+
+def search(text):
+    songs = []
+    for artist in Artist.objects(name=text):
+        songs.extend(Song.objects(artist=artist))
+    songs.extend(song.objects(name=text))
+
+    comments = sum([Comment.objects(song=song) for song in songs], [])
+    return comments
+
+
+def suggest(text):
+    items = []
+    if not isinstance(text, unicode):
+        text = text.decode('utf-8')
+    artists = Artist.objects(name__contains=text)
+    items.extend([{'name': artist.name, 'avatar': artist.picture,
+                'type': 'artist'}
+               for artist in artists])
+    songs = Song.objects(name__contains=text)
+    items.extend([{'name': song.name, 'type': 'song'}
+               for song in songs])
+    return items

@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import ReactDOM from 'react-dom';
 import {observer} from 'mobx-react';
 import DevTools from 'mobx-react-devtools';
 import {List, ListItem} from 'material-ui/List';
