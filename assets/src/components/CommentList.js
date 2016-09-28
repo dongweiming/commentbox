@@ -167,6 +167,12 @@ class CommentList extends Component {
          </FloatingActionButton>
       </div>
     }
+    let debugPanel;
+    if (__DEV__) {
+      debugPanel = (
+        <DevTools />
+      );
+    }
     return (
       <div>
         {orderBy === 'random' ?
@@ -188,7 +194,7 @@ class CommentList extends Component {
             }
           </List>
         </div>
-        <DevTools />
+        {debugPanel}
       </div>
     )
   }
