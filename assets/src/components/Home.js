@@ -45,7 +45,7 @@ class Banner extends Component {
 
   onChange = () => {
     let text = ReactDOM.findDOMNode(this.refs.query).value;
-    if (text.length > 2) {
+    if (text.length > 1) {
       this.props.commentStore.loadSuggest(text);
     }
   }
