@@ -42,7 +42,7 @@ app.use(require('webpack-hot-middleware')(compiler, {
 }));
 
 app.use(httpProxyMiddleware('/', {
-    target: 'http://localhost:8000/'
+    target: 'http://localhost:8100/'
 }));
 
 app.use(bodyParser.json());

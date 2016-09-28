@@ -19,10 +19,10 @@ var plugins = [
 ];
 
 module.exports = {
-    devtool: "source-map",
+    devtool: "cheap-module-source-map",
     entry: {
-		    index: ['./src/index'],
-	  },
+	index: ['./src/index'],
+    },
     output: {
         path: path.join(output, publicPath),
         filename: '[name].bundle.js',

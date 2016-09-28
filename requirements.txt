@@ -1,4 +1,7 @@
+flask==0.11
 mongoengine==0.10.6
+flask-mako==0.4
+flask-mongoengine==0.8
 requests==2.11.1
 -e git+https://github.com/dongweiming/fake-useragent.git@master#egg=fake-useragent
 lxml==3.6.4
