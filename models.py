@@ -62,10 +62,6 @@ class BaseModel(db.Document):
             {'$sample': {'size': size}}))
         return [s['_id'] for s in samples]
 
-    @classmethod
-    def ids_to_cls(cls, ids):
-        return cls.objects(id__in=ids)
-
 
 class Artist(BaseModel):
     name = db.StringField()
@@ -137,7 +133,7 @@ class Comment(BaseModel):
                 ids = cls.get_sample_ids(SAMPLE_SIZE)
                 cls.cache_by_key(key, ids)
 
-        comments = cls.ids_to_cls(ids)
+        comments = cls.get_multi(ids)
         return comments
 
     @classmethod
@@ -145,10 +141,10 @@ class Comment(BaseModel):
         ids = cache.lrange(STAR_KEY, start, start + limit)
         if not ids:
             ids = [c.id for c in cls.objects.order_by('-like_count')[:TOTAL_SIZE]]  # noqa
+            cache.delete(STAR_KEY)
             cache.rpush(STAR_KEY, *ids)
             ids = ids[start : start + limit]
-
-        return cls.ids_to_cls(ids)
+        return cls.get_multi(ids)
 
     def to_dict(self):
         song_obj = self.song

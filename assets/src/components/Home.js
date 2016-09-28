@@ -13,6 +13,7 @@ import {cyan500, grey200, pinkA200, darkWhite} from 'material-ui/styles/colors';
 
 import CommentList from './CommentList';
 import commentStore from '../stores/commentStore';
+import {MEDIUMWIDTH} from './utils';
 
 class SearchHint extends Component {
   handleClick = (hint) => {
@@ -34,7 +35,8 @@ class SearchHint extends Component {
     const {hint} = this.props;
     return <ListItem style={styles.searchHintLi} primaryText={`${hint.name} - ${hint.type}`}
              leftIcon={ hint.type === 'artist' ? <ActionGrade color={pinkA200} /> : null}
-             rightAvatar={<Avatar src={hint.avatar} />} onClick={this.handleClick.bind(this, hint)}/>
+             rightAvatar={<Avatar src={hint.avatar && hint.avatar.replace(/=640y300/, '=200y200')} />}
+             onClick={this.handleClick.bind(this, hint)}/>
   }
 }
 
@@ -43,7 +45,9 @@ class Banner extends Component {
 
   onChange = () => {
     let text = ReactDOM.findDOMNode(this.refs.query).value;
-    this.props.commentStore.loadSuggest(text);
+    if (text.length > 2) {
+      this.props.commentStore.loadSuggest(text);
+    }
   }
 
   render() {
@@ -58,7 +62,6 @@ class Banner extends Component {
       },
       bannerBackground: {
         opacity: 1,
-        backgroundImage: 'url("/static/images/music.jpg")',
         backgroundPosition: 'center 41px',
         position: 'absolute',
         height: '100%',
@@ -119,6 +122,8 @@ class Banner extends Component {
     };
 
     const {hints} = this.props.commentStore;
+
+    styles.bannerBackground.backgroundImage = 'url("/static/images/music' + (screen.width < MEDIUMWIDTH ? "_small" : "") + '.jpg")'
     return (
 
       <div style={styles.root}>

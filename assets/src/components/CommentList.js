@@ -14,6 +14,9 @@ import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
 import MenuItem from 'material-ui/MenuItem';
 import withWidth, {LARGE} from 'material-ui/utils/withWidth';
 
+import {MEDIUMWIDTH} from './utils';
+
+
 function getBodyHeight() {
   let height;
   if ( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
@@ -64,7 +67,7 @@ class CommentCard extends Component {
            <CardMedia
              overlay={<CardTitle title={<a href={artist.url}>{artist.name}</a>}/>}
            >
-             <img src={artist.avatar} />
+             <img src={screen.width > MEDIUMWIDTH ? artist.avatar : artist.avatar.replace(/=640y300/, '=213y100')} />
            </CardMedia>
            <CardText>
              {content}
@@ -83,8 +86,7 @@ class CommentList extends Component {
     pcThreshold: 450,
     mobileThreshold: 650,
     threshold: 450,
-    perPage: 20,
-    mediumWidth: 768
+    perPage: 20
   }
 
   componentDidMount () {
@@ -95,7 +97,7 @@ class CommentList extends Component {
 
   componentWillMount () {
     let showPic, threshold, height;
-    if (screen.width > this.props.mediumWidth) {
+    if (screen.width > MEDIUMWIDTH) {
       showPic = false;
       threshold = this.props.pcThreshold;
       height = window.innerHeight;
@@ -113,7 +115,7 @@ class CommentList extends Component {
 
     var scrollTop = (window.pageYOffset !== undefined) ? window.pageYOffset : (document.documentElement || document.body.parentNode || document.body).scrollTop;
     let threshold = this.threshold;
-    if (screen.width < this.props.mediumWidth) {
+    if (screen.width < MEDIUMWIDTH) {
       threshold = threshold * (this.props.commentStore.pageLoaded / this.props.perPage + 1 );
     }
     if (getBodyHeight() - scrollTop - this.height < Number(threshold) && !this.props.commentStore.useSearch) {
@@ -157,11 +159,13 @@ class CommentList extends Component {
     };
 
     const {comments, star, orderBy, showPic, pending} = this.props.commentStore;
+    let promotion = '';
+
     if (pending) {
-      return <div style={style}><CircularProgress size={1.5}/></div>
+      promotion = <div style={style}><CircularProgress size={1.5}/></div>
     } else if (!comments.length) {
       buttonStyle = Object.assign(buttonStyle, {'float': 'none'});
-      return <div style={style}><p>没有搜到评论哎😌  点下边刷新按钮看看</p>
+      promotion = <div style={style}><p>没有搜到评论哎😌  点下边刷新按钮看看</p>
          <FloatingActionButton onClick={this.onReset} style={buttonStyle}>
            <NavigationRefresh/>
          </FloatingActionButton>
@@ -175,7 +179,8 @@ class CommentList extends Component {
     }
     return (
       <div>
-        {orderBy === 'random' ?
+        {promotion}
+        {(orderBy === 'random' && !pending ) ?
           <FloatingActionButton onClick={this.onReset} style={buttonStyle}>
             <NavigationRefresh/>
           </FloatingActionButton> : ''

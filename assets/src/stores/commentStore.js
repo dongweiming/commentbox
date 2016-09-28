@@ -62,6 +62,7 @@ class CommentStore {
     @action toggleOrderBy = () => {
         this.star = !this.star;
         this.random = !this.random;
+        this.setComments([]);
         this.resetComments(this.orderBy);
         this.pageLoaded = 0;
     }
