@@ -11,10 +11,10 @@ ARTIST_URL = 'http://music.163.com/#/artist?id={}'
 SONG_URL = 'http://music.163.com/#/song?id={}'
 USER_URL = 'http://music.163.com/#/user/home?id={}'
 SAMPLE_SIZE = 200
-TOTAL_SIZE = 2000
+TOTAL_SIZE = 20000
 
 RANDOM_KEY = 'commentbox:random:{session_id}'
-STAR_KEY = 'commentbox:star'
+STAR_KEY = 'commentbox:star:v2'
 OBJ_KEY = 'commentbox:object:{coll_name}:{id}'
 SEARCH_KEY = 'commentbox:search:{type}:{id}'
 SUGGEST_KEY = 'commentbox:suggest:{text}'
