@@ -1,4 +1,5 @@
 flask==0.11
+gunicorn==19.6.0
 mongoengine==0.10.6
 flask-mako==0.4
 flask-mongoengine==0.8
